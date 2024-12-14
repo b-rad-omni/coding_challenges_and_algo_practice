@@ -2,31 +2,41 @@ class Solution:
     def strip_input(self, s: str) -> str:
         
         return s.strip().lower()
+import json
+import os
 
-    def romanToInt(self, s: str) -> int:
-        roman_to_int_dict = {
-            'i': 1,
-            'v': 5,
-            'x': 10,
-            'l': 50,
-            'c': 100,
-            'd': 500,
-            'm': 1000
-        }
-        
-        
-        s = self.strip_input(s)
-        
-        roman_out = 0
-        length = len(s)
-        
-        # Loop through the string
-        for i in range(length):
-            # If the current character is less than the next character, subtract it
-            if i + 1 < length and roman_to_int_dict[s[i]] < roman_to_int_dict[s[i + 1]]:
-                roman_out -= roman_to_int_dict[s[i]]
-            else:
-                # Otherwise, add the value of the current character
-                roman_out += roman_to_int_dict[s[i]]
-        
-        return roman_out
+def load_roman_mapping(filepath: str) -> dict:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    full_path = os.path.join(script_dir, filepath)
+    with open(full_path, "r") as file:
+        return {k.upper(): v for k, v in json.load(file).items()}
+
+def romanToInt(s: str) -> int:
+    # Load the mapping
+    roman_to_int_dict = load_roman_mapping('roman_numerals.json')
+    
+    # Convert to uppercase
+    s = s.upper()
+    
+    roman_out = 0
+    length = len(s)
+    
+    # Loop through the string
+    for i in range(length):
+        # If the current character is less than the next character, subtract it
+        if i + 1 < length and roman_to_int_dict[s[i]] < roman_to_int_dict[s[i + 1]]:
+            roman_out -= roman_to_int_dict[s[i]]
+        else:
+            # Otherwise, add the value of the current character
+            roman_out += roman_to_int_dict[s[i]]
+    
+    return roman_out
+
+# Test the function
+test_cases = ["III", "LVIII", "MCMXCIV"]
+for roman_num in test_cases:
+    result = romanToInt(roman_num)
+    print(f"{roman_num}: {result}")
+    
+
+
